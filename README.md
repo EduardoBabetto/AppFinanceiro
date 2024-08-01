@@ -64,6 +64,13 @@ projeto.jwtSecret=bxOksa8BHgdAhR80Y3pEYvS5M+MnF2sheFDqprkTqQ4odqoszJLW1ikw64/nT/
 
 projeto.jwtExpirationMs=90000
 
+# Link de documentação
+
+Link da documentação
+Uma vez com a aplicação em execução em sua maquina acesse acesse o link abaixo para ter acesso a documentação completa dos enpoints:
+
+http://localhost:8080/api-myfreelas/swagger-ui.html
+
 # Licença
 Este projeto está licenciado sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
@@ -82,6 +89,8 @@ Este projeto está licenciado sob a licença MIT. Veja o arquivo LICENSE para ma
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white)
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
+![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![Jira](https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white)
 ### Explicação das Seções
 
 - **Título do Projeto**: Nome do seu projeto.
