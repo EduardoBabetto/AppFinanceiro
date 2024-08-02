@@ -20,6 +20,8 @@ import br.com.app.financeiro.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Categoria;
 import br.com.app.financeiro.service.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "CategoriaController", description = "APIs relacionadas a categorias")
@@ -34,6 +36,10 @@ public class CategoriaController {
         private JwtUtils jwtUtils;
     
     @Operation(summary = "Adicionar uma nova categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Categoria adicionada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao adicionar categoria")
+    })
     @PostMapping("/adicionar")
     public ResponseEntity<String> adicionarCategoriaNova(@RequestHeader("Authorization") String token,
     @RequestBody Categoria categoria) {
@@ -53,6 +59,10 @@ public class CategoriaController {
     }
 
     @Operation(summary = "Remover uma categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Removida com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao remover categoria")
+    })
     @DeleteMapping("/remover")
     public ResponseEntity<String> removerCategoria(@RequestHeader("Authorization") String token,
     @RequestParam ("nome") String nome) {
@@ -75,6 +85,10 @@ public class CategoriaController {
     }
 
     @Operation(summary = "Adiciona valor a uma categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Valor atualizado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao adicionar")
+    })
     @PutMapping("/AdicionarValor")
     public ResponseEntity<String> adicionarValor(@RequestHeader("Authorization") String token,
     @RequestBody Categoria categoria) {
@@ -95,6 +109,10 @@ public class CategoriaController {
     }
 
     @Operation(summary = "Remove um valor da categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Valor removido com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao remover")
+    })
     @PutMapping("/removerValor")
     public ResponseEntity<String> removerValor(@RequestHeader("Authorization") String token,
     @RequestBody Categoria categoria) {
@@ -114,6 +132,10 @@ public class CategoriaController {
     }
 
     @Operation(summary = "Mostra as categorias de um usuário escolhido")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categorias retornadas com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar categorias")
+    })
     @GetMapping("/CategoriaPorUsuario")
     public ResponseEntity<List<Categoria>> categoriaPorUsuario(@RequestHeader("Authorization") String token) {
         try{
@@ -131,6 +153,10 @@ public class CategoriaController {
     }
 
     @Operation(summary = "Edita a categoria escolhida")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categorias editadas com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao editar categoria")
+    })
     @PutMapping("/editar")
     public ResponseEntity<?> editarCategoria(@RequestHeader ("Authorization") String token,
     @RequestBody Categoria categoria) {

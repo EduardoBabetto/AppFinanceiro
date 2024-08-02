@@ -18,7 +18,8 @@ import br.com.app.financeiro.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.ConversaoMoedas;
 import br.com.app.financeiro.service.ConversaoMoedasService;
 import io.swagger.v3.oas.annotations.Operation;
-
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "ConversaoMoedasController", description = "APIs relacionadas as conversões de moedas")
@@ -33,6 +34,10 @@ public class ConversaoMoedasController {
     private JwtUtils jwtUtils;
 
     @Operation(summary = "Mostrar taxa de conversão do saldo do usuário")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Conversão calculada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar conversão")
+    })
     @PostMapping("/TaxaDeConversaoSaldo")
     public ResponseEntity<String> taxaDeConversaoSaldo(@RequestHeader("Authorization") String token, 
     @RequestParam("moeda") String moeda) throws IOException {
@@ -52,6 +57,10 @@ public class ConversaoMoedasController {
     }
 
     @Operation(summary = "Mostrar a conversão do saldo do usuário em outras moedas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Conversão calculada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar conversão")
+    })
     @PostMapping("/SaldoEmOutrasMoedas")
     public ResponseEntity<String> SaldoEmOutrasMoedas(@RequestHeader("Authorization") String token,
     @RequestParam("moeda") String moeda) throws IOException {
@@ -65,6 +74,10 @@ public class ConversaoMoedasController {
     }
 
     @Operation(summary = "Mostrar valor em outras moedas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Conversão calculada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar conversão")
+    })
     @PostMapping("/ValorEmReais")
     public ResponseEntity<String> valorEmReais(@RequestBody ConversaoMoedas cm) throws IOException {
         BigDecimal valorConvertido = cms.valorEmReais(cm.getMoeda(),cm.getValor());
@@ -72,6 +85,10 @@ public class ConversaoMoedasController {
     }
     
     @Operation(summary = "Mostra a taxa de conversão do valor em outras moedas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Conversão calculada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar conversão")
+    })
     @PostMapping("/TaxaDeConversao")
     public ResponseEntity<String> taxaDeConversaoValor(@RequestBody ConversaoMoedas cm) throws IOException {
         BigDecimal valorConvertido = cms.taxaDeConversaoSaldo(cm.getMoeda(),cm.getValor());

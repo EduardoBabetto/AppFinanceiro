@@ -43,7 +43,8 @@ public class UsuarioController {
         @ApiResponse(
             responseCode = "201",
             description = "Usuário adicionado com sucesso!"
-        )
+        ),
+        @ApiResponse(responseCode="400", description = "Erro ao adicionar usuário")
     })
     @PostMapping("/adicionar")
     public ResponseEntity<String> adicionar(@RequestBody Usuario usuario){
@@ -59,6 +60,13 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Adicionar mais valor ao saldo")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Saldo adicionado com sucesso!"
+        ),
+        @ApiResponse(responseCode="400", description = "Erro ao adicionar saldo")
+    })
     @PutMapping("/adicionarSaldo")
     public ResponseEntity<String> adicionarSaldo(@RequestHeader("Authorization") String token, 
     @RequestParam("valor") BigDecimal valor) {
@@ -85,25 +93,14 @@ public class UsuarioController {
         return usuarioService.listarContas();
     }
 
-    @Operation(summary = "Mostrar saldo")
-    @GetMapping("/saldo")
-    public BigDecimal retornarConta(@RequestHeader("Authorization") String token) {
-        try{
-        String cleanToken = token.replace("Bearer ", "");
-        
-        // Extrai o userId do token
-        String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
-        
-        // Converte o userId para Long
-        Long userId = Long.parseLong(userIdStr);
-        return usuarioService.retornarSaldo(userId);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Id inválido ou usuário inexistente",e);
-        }
-    }
-
     @Operation(summary = "Mostrar todas as informações de um usuário")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Informações retornadas com sucesso!"
+        ),
+        @ApiResponse(responseCode="400", description = "Erro ao mostrar informações")
+    })
     @GetMapping("/informações")
     public String retornarInformacoes(@RequestHeader("Authorization") String token) {
         try{
@@ -124,6 +121,13 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Atualiza as informacoes do usuario")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Informações atualizadas com sucesso!"
+        ),
+        @ApiResponse(responseCode="400", description = "Erro ao atualizar informações")
+    })
     @PutMapping("/atualizarInformacoes")
     public ResponseEntity<?> atualizarInformacoes(@RequestHeader("Authorization") String token,
     @RequestBody Usuario usuario) {

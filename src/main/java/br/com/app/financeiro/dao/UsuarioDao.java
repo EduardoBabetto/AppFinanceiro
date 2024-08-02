@@ -180,7 +180,7 @@ public class UsuarioDao {
         return null;
     }
 
-    public void atualizarInformacoes(Usuario usuario) {
+    public boolean atualizarInformacoes(Usuario usuario) {
         if(findbyEmail(usuario.getEmail()) != null) {
             throw new FinanceiroException("Email ja cadastrado");
         }
@@ -195,6 +195,8 @@ public class UsuarioDao {
         } catch (SQLException e) {
             throw new FinanceiroException(e.getMessage(), e);
         }
+
+        return true;
 }
 }
 

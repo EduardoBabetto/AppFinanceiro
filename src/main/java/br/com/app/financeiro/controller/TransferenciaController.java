@@ -21,6 +21,8 @@ import br.com.app.financeiro.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Transferencia;
 import br.com.app.financeiro.service.TransferenciaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "TransferenciaController", description = "APIs relacionadas a transferências")
@@ -35,6 +37,10 @@ public class TransferenciaController {
     private JwtUtils jwtUtils;
 
     @Operation(summary = "Adiciona uma nova transferencia")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Transferencia adicionada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao adicionar transferencia")
+    })
     @PostMapping("/adicionar")
     public ResponseEntity<String> adicionar(@RequestHeader("Authorization") String token,
     @RequestBody Transferencia transferencia) {
@@ -59,6 +65,10 @@ public class TransferenciaController {
     }
     
     @Operation(summary = "Mostra todas as transferencias de um usuario")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transferencia retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar transferencia")
+    })
     @GetMapping("/extrato")
     public List<Transferencia> listarTransferencias(@RequestHeader("Authorization") String token) {
         try{
@@ -76,6 +86,10 @@ public class TransferenciaController {
     }
 
     @Operation(summary = "Remove uma transferencia")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Transferencia removida com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao remover transferencia")
+    })
     @DeleteMapping("/remover")
     public ResponseEntity<String> removerTransferencia(@RequestHeader("Authorization") String token,
     @RequestBody Transferencia transferencia) {
@@ -97,6 +111,10 @@ public class TransferenciaController {
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario em ordem de data")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transferencia retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar transferencia")
+    })
     @GetMapping("/extrato/data")
     public List<Transferencia> extratoOrdData(@RequestHeader("Authorization") String token) {
         try{
@@ -114,6 +132,10 @@ public class TransferenciaController {
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario em ordem de valor")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transferencia retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar transferencia")
+    })
     @GetMapping("/extrato/valor")
     public List<Transferencia> extratoOrdValor(@RequestHeader("Authorization") String token) {
         try{
@@ -131,6 +153,10 @@ public class TransferenciaController {
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario filtrando por tipo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transferencia retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar transferencia")
+    })
     @GetMapping("/extrato/filtrar/tipo")
     public List<Transferencia> extratoFiltrarTipo(@RequestHeader("Authorization") String token,
     @RequestParam("tipo") TipoTransferencia tipo) {
@@ -149,6 +175,10 @@ public class TransferenciaController {
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario filtrando por categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transferencia retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar transferencia")
+    })
     @GetMapping("/extrato/filtrar/categoria")
     public List<Transferencia> extratoFiltrarCategoria(@RequestHeader("Authorization") String token,
     @RequestParam("categoria") String categoria) {
@@ -167,6 +197,10 @@ public class TransferenciaController {
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario filtrando por data")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transferencia retornada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao mostrar transferencia")
+    })
     @GetMapping("/extrato/filtrar/data")
     public List<Transferencia> extratoFiltrarData(@RequestHeader("Authorization") String token,
     @RequestParam("data") LocalDate data) {
