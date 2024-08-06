@@ -37,7 +37,9 @@ public class UsuarioService {
     }
 
     public void adicionarSaldo(Long id, BigDecimal novoSaldo) {
-        usuarioDao.adicionarSaldo(id, novoSaldo);
+        if(!usuarioDao.adicionarSaldo(id, novoSaldo)){
+            throw new FinanceiroException("Conta não encontrada!");
+        }
     }
 
     public BigDecimal retornarSaldo(Long id) {
@@ -50,7 +52,12 @@ public class UsuarioService {
     }
 
     public Usuario retornarInformacoes(Long idUsuario) {
-        return usuarioDao.procurarUsuarioPorId(idUsuario);
+        Usuario u = usuarioDao.procurarUsuarioPorId(idUsuario);
+        if (u != null) {
+            return u;
+        } else {
+            throw new FinanceiroException("Conta não encontrada!");
+        }
     }
 
     public Usuario login(String email, String senha) {
@@ -97,8 +104,9 @@ public class UsuarioService {
         }
         validarEmail(usuario.getEmail());
         validarSenha(usuario.getSenha());
-        if (usuario.getNome() == null || usuario.getNome().isEmpty() || usuario.getNome().isBlank() || usuario.getNome().matches("^[A-Za-zÀ-ÖØ-öø-ÿÇç]+$")) {
-            throw new FinanceiroException("Nome não pode ser nulo ou vazio.");
+        if (usuario.getNome() == null || usuario.getNome().isEmpty() || usuario.getNome().isBlank() || 
+        !usuario.getNome().matches("^[A-Za-zÀ-ÖØ-öø-ÿÇç ]+$")) {
+            throw new FinanceiroException("Nome não pode ser nulo ou vazio e nem conter números.");
         }
     }
 

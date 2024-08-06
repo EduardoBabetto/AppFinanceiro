@@ -53,7 +53,7 @@ public class UsuarioDao {
             desc.execute();
             return true;
         } catch (SQLException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e);
         }
     }
 

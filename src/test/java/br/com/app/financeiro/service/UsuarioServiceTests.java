@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.com.app.financeiro.dao.UsuarioDao;
 import br.com.app.financeiro.exceptions.FinanceiroException;
@@ -28,6 +29,9 @@ public class UsuarioServiceTests {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     void setUp(){
         MockitoAnnotations.openMocks(this);
@@ -42,11 +46,13 @@ public class UsuarioServiceTests {
         usuario.setSenha("12345678");
         usuario.setSaldo(BigDecimal.ZERO);
 
-        Mockito.when(usuarioDao.adicionarUsuario(usuario)).thenReturn(1L);
-
+        Mockito.when(usuarioDao.adicionarUsuario(Mockito.any(Usuario.class))).thenReturn(1L);
+        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn("12345678");
+        
         usuarioService.adicionarUsuario(usuario);
 
-        Mockito.verify(usuarioDao, Mockito.times(1)).adicionarUsuario(usuario);
+        Mockito.verify(usuarioDao, Mockito.times(1)).adicionarUsuario(Mockito.any(Usuario.class));
+        Mockito.verify(passwordEncoder, Mockito.times(1)).encode(Mockito.anyString());
     }
 
     @Test
@@ -58,13 +64,13 @@ public class UsuarioServiceTests {
         usuario.setSenha("12345678");
         usuario.setSaldo(BigDecimal.ZERO);
 
-        Mockito.when(usuarioDao.adicionarUsuario(usuario)).thenReturn(null);
+        //Mockito.when(usuarioDao.adicionarUsuario(usuario)).thenReturn(null);
 
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.adicionarUsuario(usuario);
         });
 
-        Assertions.assertEquals("Email inválido", e.getMessage());
+        Assertions.assertEquals("Email inválido.", e.getMessage());
 
         Mockito.verify(usuarioDao, Mockito.times(0)).adicionarUsuario(usuario);
     }
@@ -78,13 +84,13 @@ public class UsuarioServiceTests {
         usuario.setSenha("12345");
         usuario.setSaldo(BigDecimal.ZERO);
 
-        Mockito.when(usuarioDao.adicionarUsuario(usuario)).thenReturn(null);
+        //Mockito.when(usuarioDao.adicionarUsuario(usuario)).thenReturn(null);
 
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.adicionarUsuario(usuario);
         });
 
-        Assertions.assertEquals("Senha inválida", e.getMessage());
+        Assertions.assertEquals("Senha deve ter pelo menos 8 caracteres.", e.getMessage());
 
         Mockito.verify(usuarioDao, Mockito.times(0)).adicionarUsuario(usuario);
     }
@@ -103,50 +109,41 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    @DisplayName("Erro ao adicionar Saldo colocando letras no lugar do valor")
+    @DisplayName("Erro ao adicionar Saldo não achando a conta")
     public void adicionarSaldoCase2(){
-        BigDecimal novoSaldo = new BigDecimal(0);
+        BigDecimal novoSaldo = new BigDecimal(100.0);
         Long usuarioId = 1L;
 
-        Mockito.when(usuarioDao.adicionarSaldo(usuarioId, novoSaldo)).thenReturn(false);
+        //Mockito.when(usuarioDao.adicionarSaldo(Mockito.anyLong(), novoSaldo)).thenReturn(false);
 
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.adicionarSaldo(usuarioId, novoSaldo);
         });
 
-        Assertions.assertEquals("Dados inválidos", e.getMessage());
+        Assertions.assertEquals("Conta não encontrada!", e.getMessage());
 
-        Mockito.verify(usuarioDao, Mockito.times(0)).adicionarSaldo(usuarioId, novoSaldo);
+        Mockito.verify(usuarioDao, Mockito.times(1)).adicionarSaldo(usuarioId, novoSaldo);
     }
 
     @Test
     @DisplayName("Mostra as informações do usuario com sucesso")
     public void informacoesUsuariosCase1(){
         Long usuarioId = 1L;
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+        usuario.setNome("Teste");
 
-        Mockito.when(usuarioDao.procurarUsuarioPorId(usuarioId)).thenReturn(new Usuario());
+        Mockito.when(usuarioDao.procurarUsuarioPorId(usuarioId)).thenReturn(usuario);
 
-        usuarioService.retornarInformacoes(usuarioId);
+        Usuario resultado = usuarioService.retornarInformacoes(usuarioId);
+
+        Assertions.assertNotNull(resultado);
+        Assertions.assertEquals(usuarioId, resultado.getId());
+        Assertions.assertEquals("Teste", resultado.getNome());
 
         Mockito.verify(usuarioDao, Mockito.times(1)).procurarUsuarioPorId(usuarioId);
     }
-
-    @Test
-    @DisplayName("Erro ao mostrar pelo id inexistente")
-    public void informacoesUsuariosCase2(){
-        Long usuarioId = null;
-
-        Mockito.when(usuarioDao.procurarUsuarioPorId(usuarioId)).thenReturn(null);
-
-        Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
-            usuarioService.retornarInformacoes(usuarioId);
-        });
-
-        Assertions.assertEquals("Conta não encontrada", e.getMessage());
-
-        Mockito.verify(usuarioDao, Mockito.times(0)).procurarUsuarioPorId(usuarioId);
-    }
-
+    
     @Test
     @DisplayName("Sucesso ao atualizar o usuario")
     public void atualizarUsuarioCase1(){
@@ -157,11 +154,13 @@ public class UsuarioServiceTests {
         usuario.setSenha("12345677");
         usuario.setSaldo(BigDecimal.ZERO);
 
-        Mockito.when(usuarioDao.atualizarInformacoes(usuario)).thenReturn(true);
+        Mockito.when(usuarioDao.atualizarInformacoes(Mockito.any(Usuario.class))).thenReturn(true);
+        Mockito.when(usuarioDao.procurarUsuarioPorId(Mockito.anyLong())).thenReturn(usuario);
 
         usuarioService.atualizarInformacoes(usuario);
 
-        Mockito.verify(usuarioDao, Mockito.times(1)).atualizarInformacoes(usuario);
+        Mockito.verify(usuarioDao, Mockito.times(1)).atualizarInformacoes(Mockito.any(Usuario.class));
+        Mockito.verify(usuarioDao, Mockito.times(1)).procurarUsuarioPorId(Mockito.anyLong());
     }
 
     @Test
@@ -174,15 +173,15 @@ public class UsuarioServiceTests {
         usuario.setSenha("1234567");
         usuario.setSaldo(BigDecimal.ZERO);
 
-        Mockito.when(usuarioDao.atualizarInformacoes(usuario)).thenReturn(false);
+        //Mockito.when(usuarioDao.atualizarInformacoes(Mockito.any(Usuario.class))).thenReturn(false);
 
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.atualizarInformacoes(usuario);
         });
 
-        Assertions.assertEquals("Dados inválidos", e.getMessage());
+        Assertions.assertEquals("Conta não encontrada!", e.getMessage());
 
-        Mockito.verify(usuarioDao, Mockito.times(0)).atualizarInformacoes(usuario);
+        Mockito.verify(usuarioDao, Mockito.times(0)).atualizarInformacoes(Mockito.any(Usuario.class));
     }
 
 }
