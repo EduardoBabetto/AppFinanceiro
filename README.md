@@ -10,7 +10,7 @@ Uma aplicação financeira para gerenciamento das finanças pessoais.
 - [Configuração](#configuração)
 - [Licença](#licença)
 - [Autores](#autores)
-- [Tecnologias] (#tecnologias)
+- [Tecnologias](#tecnologias)
 # Descrição
 
 Este projeto é uma aplicação financeira desenvolvida em Java utilizando Spring Boot. Ele oferece funcionalidades de gerenciamento de contas de usuário, autenticação JWT.
