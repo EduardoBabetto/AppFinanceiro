@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.app.financeiro.config.jwt.JwtUtils;
-import br.com.app.financeiro.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Usuario;
 import br.com.app.financeiro.service.CategoriaService;
 import br.com.app.financeiro.service.UsuarioService;
@@ -47,16 +46,12 @@ public class UsuarioController {
         @ApiResponse(responseCode="400", description = "Erro ao adicionar usuário")
     })
     @PostMapping("/adicionar")
-    public ResponseEntity<String> adicionar(@RequestBody Usuario usuario){
-        try{
+    public ResponseEntity<?> adicionar(@RequestBody Usuario usuario){
         Long u = usuarioService.adicionarUsuario(usuario);
         usuario.setId(u);
         categoriaService.adicionarCategoriasPadroes(usuario);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao adicionar usuário: " + e);
-        }
-        return new ResponseEntity<>("Usuário adicionado com sucesso!", HttpStatus.CREATED);
+
+        return new ResponseEntity<>(usuario, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Adicionar mais valor ao saldo")
@@ -70,7 +65,6 @@ public class UsuarioController {
     @PutMapping("/adicionarSaldo")
     public ResponseEntity<String> adicionarSaldo(@RequestHeader("Authorization") String token, 
     @RequestParam("valor") BigDecimal valor) {
-        try{
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -78,11 +72,6 @@ public class UsuarioController {
         Long userId = Long.parseLong(userIdStr);
 
         usuarioService.adicionarSaldo(userId,valor);
-        }
-        catch(Exception e ){
-            e.printStackTrace();
-            throw new FinanceiroException("Dados inválidos: " + e);
-        }
         return new ResponseEntity<>("Saldo atualizado com sucesso!", HttpStatus.OK);
     }
 
@@ -102,8 +91,7 @@ public class UsuarioController {
         @ApiResponse(responseCode="400", description = "Erro ao mostrar informações")
     })
     @GetMapping("/informações")
-    public String retornarInformacoes(@RequestHeader("Authorization") String token) {
-        try{
+    public ResponseEntity<?> retornarInformacoes(@RequestHeader("Authorization") String token) {
         String cleanToken = token.replace("Bearer ", "");
         
         // Extrai o userId do token
@@ -113,11 +101,8 @@ public class UsuarioController {
         Long userId = Long.parseLong(userIdStr);
         
         // Obtém as informações do usuário
-        return usuarioService.retornarInformacoes(userId).toString();
-        }
-        catch(Exception e){
-        throw new FinanceiroException("Erro ao retornar informações: " + e);
-        }
+        return new ResponseEntity<>(usuarioService.retornarInformacoes(userId), HttpStatus.OK);
+
     }
 
     @Operation(summary = "Atualiza as informacoes do usuario")
@@ -131,7 +116,7 @@ public class UsuarioController {
     @PutMapping("/atualizarInformacoes")
     public ResponseEntity<?> atualizarInformacoes(@RequestHeader("Authorization") String token,
     @RequestBody Usuario usuario) {
-        try{
+      
         String cleanToken = token.replace("Bearer ", "");
 
         // Extrai o userId do token
@@ -141,10 +126,6 @@ public class UsuarioController {
         
         usuario.setId(userId);
         usuarioService.atualizarInformacoes(usuario);
-        return new ResponseEntity<>("Usuario atualizado com sucesso", HttpStatus.OK);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao atualizar informações",e);
-        }
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
 }

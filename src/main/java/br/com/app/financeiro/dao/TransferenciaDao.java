@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import br.com.app.financeiro.conexao.Conexao;
 import br.com.app.financeiro.enuns.TipoTransferencia;
-import br.com.app.financeiro.exceptions.FinanceiroException;
+import br.com.app.financeiro.err.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Transferencia;
 import br.com.app.financeiro.service.UsuarioService;
 
@@ -29,11 +30,11 @@ public class TransferenciaDao {
         this.us = us;
     }
 
-    public void adicionarTransferencia(Transferencia transferencia) {
+    public Long adicionarTransferencia(Transferencia transferencia) {
         String sql = "INSERT INTO tb_transferencia VALUES (default,?,?,?,?,?,?)";
 
         try (Connection con = Conexao.abrir();
-             PreparedStatement desc = con.prepareStatement(sql)) {
+             PreparedStatement desc = con.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             desc.setLong(1, transferencia.getUsuarioId());
             desc.setString(2, transferencia.getNomeDestinatario());
@@ -43,8 +44,18 @@ public class TransferenciaDao {
             desc.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
 
             desc.executeUpdate();
+            try (ResultSet generatedKeys = desc.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Falha ao adicionar usuário, nenhum ID gerado.");
+                }
+            }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -71,7 +82,10 @@ public class TransferenciaDao {
                 transferencias.add(transferencia);
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return transferencias;
     }
@@ -101,7 +115,10 @@ public class TransferenciaDao {
                 }
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return extrato;
     }
@@ -128,7 +145,10 @@ public class TransferenciaDao {
                 }
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return transferencia;
@@ -149,7 +169,10 @@ public class TransferenciaDao {
             desc.setLong(2, transferencia.getUsuarioId());
             desc.executeUpdate();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -177,7 +200,10 @@ public class TransferenciaDao {
                 }
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return extrato;
     }
@@ -206,7 +232,10 @@ public class TransferenciaDao {
                 }
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return extrato;
     }
@@ -236,7 +265,10 @@ public class TransferenciaDao {
                 }
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return extrato;
     }
@@ -266,7 +298,10 @@ public class TransferenciaDao {
                 }
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return extrato;
     }
@@ -296,7 +331,10 @@ public class TransferenciaDao {
                 }
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return extrato;
     }

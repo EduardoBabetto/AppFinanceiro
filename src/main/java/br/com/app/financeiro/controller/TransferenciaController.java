@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.app.financeiro.config.jwt.JwtUtils;
 import br.com.app.financeiro.enuns.TipoTransferencia;
-import br.com.app.financeiro.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Transferencia;
 import br.com.app.financeiro.service.TransferenciaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,21 +41,20 @@ public class TransferenciaController {
         @ApiResponse(responseCode = "400", description = "Erro ao adicionar transferencia")
     })
     @PostMapping("/adicionar")
-    public ResponseEntity<String> adicionar(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> adicionar(@RequestHeader("Authorization") String token,
     @RequestBody Transferencia transferencia) {
-        try{
+      
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
         // Converte o userId para Long
         Long userId = Long.parseLong(userIdStr);
         transferencia.setUsuarioId(userId);
-        transferenciaService.adicionarTransacao(transferencia);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao adicionar transferencia", e);
-        }
-        return new ResponseEntity<>("Transação adicionada com sucesso!", HttpStatus.CREATED);
+        Long t = transferenciaService.adicionarTransacao(transferencia);
+
+        transferencia.setId(t);
+        
+        return new ResponseEntity<>(transferencia, HttpStatus.CREATED);
     }
 
     @GetMapping("/listar")
@@ -71,7 +69,7 @@ public class TransferenciaController {
     })
     @GetMapping("/extrato")
     public List<Transferencia> listarTransferencias(@RequestHeader("Authorization") String token) {
-        try{
+       
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -79,10 +77,7 @@ public class TransferenciaController {
         Long userId = Long.parseLong(userIdStr);
 
         return transferenciaService.extratoPorContas(userId);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar extrato",e);
-        }
+       
     }
 
     @Operation(summary = "Remove uma transferencia")
@@ -93,7 +88,7 @@ public class TransferenciaController {
     @DeleteMapping("/remover")
     public ResponseEntity<String> removerTransferencia(@RequestHeader("Authorization") String token,
     @RequestBody Transferencia transferencia) {
-        try{
+  
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -102,10 +97,7 @@ public class TransferenciaController {
 
         transferencia.setUsuarioId(userId);
         transferenciaService.removerTransacao(transferencia);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao remover transferencia", e);
-        }
+    
         return new ResponseEntity<>("Transação removida com sucesso!", HttpStatus.OK);
         
     }
@@ -117,7 +109,7 @@ public class TransferenciaController {
     })
     @GetMapping("/extrato/data")
     public List<Transferencia> extratoOrdData(@RequestHeader("Authorization") String token) {
-        try{
+    
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -125,10 +117,7 @@ public class TransferenciaController {
         Long userId = Long.parseLong(userIdStr);
 
         return transferenciaService.extratoOrdData(userId);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar extrato",e);
-        }
+        
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario em ordem de valor")
@@ -138,7 +127,7 @@ public class TransferenciaController {
     })
     @GetMapping("/extrato/valor")
     public List<Transferencia> extratoOrdValor(@RequestHeader("Authorization") String token) {
-        try{
+    
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -146,10 +135,7 @@ public class TransferenciaController {
         Long userId = Long.parseLong(userIdStr);
 
         return transferenciaService.extratoOrdValor(userId);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar extrato",e);
-        }
+        
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario filtrando por tipo")
@@ -160,7 +146,7 @@ public class TransferenciaController {
     @GetMapping("/extrato/filtrar/tipo")
     public List<Transferencia> extratoFiltrarTipo(@RequestHeader("Authorization") String token,
     @RequestParam("tipo") TipoTransferencia tipo) {
-        try{
+
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -168,10 +154,7 @@ public class TransferenciaController {
         Long userId = Long.parseLong(userIdStr);
 
         return transferenciaService.extratoFiltrarTipo(userId,tipo);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar extrato",e);
-        }
+    
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario filtrando por categoria")
@@ -182,7 +165,7 @@ public class TransferenciaController {
     @GetMapping("/extrato/filtrar/categoria")
     public List<Transferencia> extratoFiltrarCategoria(@RequestHeader("Authorization") String token,
     @RequestParam("categoria") String categoria) {
-        try{
+      
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -190,10 +173,6 @@ public class TransferenciaController {
         Long userId = Long.parseLong(userIdStr);
 
         return transferenciaService.extratoFiltrarCategoria(userId,categoria);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar extrato",e);
-        }
     }
 
     @Operation(summary = "Mostra todas as transferencias de um usuario filtrando por data")
@@ -204,7 +183,6 @@ public class TransferenciaController {
     @GetMapping("/extrato/filtrar/data")
     public List<Transferencia> extratoFiltrarData(@RequestHeader("Authorization") String token,
     @RequestParam("data") LocalDate data) {
-        try{
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -212,10 +190,7 @@ public class TransferenciaController {
         Long userId = Long.parseLong(userIdStr);
 
         return transferenciaService.extratoFiltrarData(userId,data);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar extrato",e);
-        }
+        
     }
     
 }

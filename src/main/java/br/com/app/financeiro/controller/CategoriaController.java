@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.app.financeiro.config.jwt.JwtUtils;
-import br.com.app.financeiro.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Categoria;
 import br.com.app.financeiro.service.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,21 +40,18 @@ public class CategoriaController {
         @ApiResponse(responseCode = "400", description = "Erro ao adicionar categoria")
     })
     @PostMapping("/adicionar")
-    public ResponseEntity<String> adicionarCategoriaNova(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> adicionarCategoriaNova(@RequestHeader("Authorization") String token,
     @RequestBody Categoria categoria) {
-        try{
+    
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
         // Converte o userId para Long
         Long userId = Long.parseLong(userIdStr);
         categoria.setUsuarioId(userId);
-        categoriaService.adicionarCategoria(categoria);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao adicionar a categoria",e);
-        }
-        return new ResponseEntity<>("Categoria adicionada com sucesso!",HttpStatus.CREATED);
+        
+        categoria.setId(categoriaService.adicionarCategoria(categoria));
+        return new ResponseEntity<>(categoria,HttpStatus.CREATED);
     }
 
     @Operation(summary = "Remover uma categoria")
@@ -66,7 +62,7 @@ public class CategoriaController {
     @DeleteMapping("/remover")
     public ResponseEntity<String> removerCategoria(@RequestHeader("Authorization") String token,
     @RequestParam ("nome") String nome) {
-        try{
+        
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -77,10 +73,7 @@ public class CategoriaController {
         categoria.setNome(nome);
         categoria.setUsuarioId(userId);
         categoriaService.removerCategoria(categoria);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao remover categoria",e);
-        }
+      
         return new ResponseEntity<>("Categoria removida com sucesso!",HttpStatus.OK);
     }
 
@@ -92,7 +85,7 @@ public class CategoriaController {
     @PutMapping("/AdicionarValor")
     public ResponseEntity<String> adicionarValor(@RequestHeader("Authorization") String token,
     @RequestBody Categoria categoria) {
-        try{
+        
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -100,10 +93,7 @@ public class CategoriaController {
         Long userId = Long.parseLong(userIdStr);
         categoria.setUsuarioId(userId);
         categoriaService.adicionarValor(categoria);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao adicionar valor",e);
-        }
+      
         return new ResponseEntity<>("Valor atualizado com sucesso!",HttpStatus.OK);
 
     }
@@ -116,7 +106,7 @@ public class CategoriaController {
     @PutMapping("/removerValor")
     public ResponseEntity<String> removerValor(@RequestHeader("Authorization") String token,
     @RequestBody Categoria categoria) {
-        try{
+    
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -124,10 +114,7 @@ public class CategoriaController {
         Long userId = Long.parseLong(userIdStr);
         categoria.setUsuarioId(userId);
         categoriaService.removerValor(categoria);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao remover valor",e);
-        }
+       
         return new ResponseEntity<>("Valor removido com sucesso!",HttpStatus.OK);
     }
 
@@ -138,7 +125,7 @@ public class CategoriaController {
     })
     @GetMapping("/CategoriaPorUsuario")
     public ResponseEntity<List<Categoria>> categoriaPorUsuario(@RequestHeader("Authorization") String token) {
-        try{
+     
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -146,10 +133,7 @@ public class CategoriaController {
         Long userId = Long.parseLong(userIdStr);
         List<Categoria> categorias = categoriaService.categoriaPorUsuario(userId);
         return new ResponseEntity<>(categorias,HttpStatus.OK);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar categorias",e);
-        }
+       
     }
 
     @Operation(summary = "Edita a categoria escolhida")
@@ -160,7 +144,7 @@ public class CategoriaController {
     @PutMapping("/editar")
     public ResponseEntity<?> editarCategoria(@RequestHeader ("Authorization") String token,
     @RequestBody Categoria categoria) {
-        try{
+   
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -168,11 +152,8 @@ public class CategoriaController {
         Long userId = Long.parseLong(userIdStr);
         categoria.setUsuarioId(userId);
         categoriaService.editarCategoria(categoria);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao editar categoria",e);
-        }
-        return new ResponseEntity<>("Categoria editada com sucesso!",HttpStatus.OK);
+      
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
 }

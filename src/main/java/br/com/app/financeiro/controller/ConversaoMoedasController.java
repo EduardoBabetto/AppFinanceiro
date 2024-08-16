@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.app.financeiro.config.jwt.JwtUtils;
-import br.com.app.financeiro.exceptions.FinanceiroException;
+import br.com.app.financeiro.err.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.ConversaoMoedas;
 import br.com.app.financeiro.service.ConversaoMoedasService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,10 +38,9 @@ public class ConversaoMoedasController {
         @ApiResponse(responseCode = "200", description = "Conversão calculada com sucesso"),
         @ApiResponse(responseCode = "400", description = "Erro ao mostrar conversão")
     })
-    @PostMapping("/TaxaDeConversaoSaldo")
-    public ResponseEntity<String> taxaDeConversaoSaldo(@RequestHeader("Authorization") String token, 
+    @PostMapping("/SaldoEmReais")
+    public ResponseEntity<String> SaldoEmReais(@RequestHeader("Authorization") String token, 
     @RequestParam("moeda") String moeda) throws IOException {
-        try{
         String cleanToken = token.replace("Bearer ", "");
         // Extrai o userId do token
         String userIdStr = jwtUtils.getUserIdFromToken(cleanToken);
@@ -49,11 +48,7 @@ public class ConversaoMoedasController {
         Long userId = Long.parseLong(userIdStr);
         
         BigDecimal saldoConvertido = cms.taxaDeConversaoSaldo(moeda,userId);
-        return new ResponseEntity<>(saldoConvertido+" "+moeda,HttpStatus.OK);
-        }
-        catch(Exception e){
-            throw new FinanceiroException("Erro ao mostrar conversão: " + e);
-        }
+        return new ResponseEntity<>(saldoConvertido+"BRL",HttpStatus.OK);
     }
 
     @Operation(summary = "Mostrar a conversão do saldo do usuário em outras moedas")
@@ -78,8 +73,8 @@ public class ConversaoMoedasController {
         @ApiResponse(responseCode = "200", description = "Conversão calculada com sucesso"),
         @ApiResponse(responseCode = "400", description = "Erro ao mostrar conversão")
     })
-    @PostMapping("/ValorEmReais")
-    public ResponseEntity<String> valorEmReais(@RequestBody ConversaoMoedas cm) throws IOException {
+    @PostMapping("/ValorEmOutrasMoedas")
+    public ResponseEntity<String> ValorEmOutrasMoedas(@RequestBody ConversaoMoedas cm) throws IOException {
         BigDecimal valorConvertido = cms.valorEmReais(cm.getMoeda(),cm.getValor());
         return new ResponseEntity<>(valorConvertido+" "+cm.getMoeda(),HttpStatus.OK);
     }
@@ -89,9 +84,9 @@ public class ConversaoMoedasController {
         @ApiResponse(responseCode = "200", description = "Conversão calculada com sucesso"),
         @ApiResponse(responseCode = "400", description = "Erro ao mostrar conversão")
     })
-    @PostMapping("/TaxaDeConversao")
-    public ResponseEntity<String> taxaDeConversaoValor(@RequestBody ConversaoMoedas cm) throws IOException {
+    @PostMapping("/MoedasEmReais")
+    public ResponseEntity<String> MoedasEmReais(@RequestBody ConversaoMoedas cm) throws IOException {
         BigDecimal valorConvertido = cms.taxaDeConversaoSaldo(cm.getMoeda(),cm.getValor());
-        return new ResponseEntity<>(valorConvertido+" "+cm.getMoeda(),HttpStatus.OK);
+        return new ResponseEntity<>(valorConvertido+"BRL",HttpStatus.OK);
     }
 }

@@ -1,16 +1,17 @@
 package br.com.app.financeiro.config.jwt;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.app.financeiro.err.ErrResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,37 +23,31 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        try {
-            String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);
+                String token = request.getHeader("Authorization");
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (Exception e) {
-            logger.error("Não foi possível definir a autenticação do usuário: {}", e);
+                try{
+                    if(token != null){
+                        token = token.replace("Bearer ", "");
+                        var decodedJwt = jwtUtils.verifyToken(token);
+                        SecurityContextHolder.getContext().setAuthentication(
+                            new UsernamePasswordAuthenticationToken(decodedJwt.getClaim("email").asString(),
+                                decodedJwt.getClaim("password").asString(),
+                                Collections.emptyList()));
+                    }
+                }catch(Exception e){
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    var err = new ErrResponse("Token inválido", 401, request.getRequestURI());
+                    ObjectMapper mapper = new ObjectMapper();
+                    response.getWriter().write(mapper.writeValueAsString(err));
+                    response.setStatus(401);
+                    return;
+                }
+    
+                filterChain.doFilter(request, response);
         }
-
-        filterChain.doFilter(request, response);
     }
-
-    private String parseJwt(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-
-        if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
-        }
-
-        return null;
-    }
-}

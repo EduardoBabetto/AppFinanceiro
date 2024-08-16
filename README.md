@@ -10,6 +10,7 @@ Uma aplicação financeira para gerenciamento das finanças pessoais.
 - [Configuração](#configuração)
 - [Licença](#licença)
 - [Autores](#autores)
+- [Tecnologias](#tecnologias)
 
 # Descrição
 

@@ -9,10 +9,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import br.com.app.financeiro.conexao.Conexao;
-import br.com.app.financeiro.exceptions.FinanceiroException;
+import br.com.app.financeiro.err.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Usuario;
 
 @Repository
@@ -40,7 +41,10 @@ public class UsuarioDao {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -53,7 +57,10 @@ public class UsuarioDao {
             desc.execute();
             return true;
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -63,7 +70,10 @@ public class UsuarioDao {
             desc.setLong(1, id);
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -84,7 +94,10 @@ public class UsuarioDao {
                 usuario.setSenha(resultado.getString("nm_senha"));
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return usuario;
     }
@@ -107,17 +120,15 @@ public class UsuarioDao {
                 usuarios.add(usuario);
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return usuarios;
     }
 
-    public void adicionarDespesa(BigDecimal valor, Long id) {
-        Usuario usuario = procurarUsuarioPorId(id);
-            if(usuario.getSaldo().compareTo(valor) < 0) {
-                throw new FinanceiroException("Saldo insuficiente");
-            }
-
+    public void adicionarDespesa(BigDecimal valor, Usuario usuario) {
         try (Connection con = Conexao.abrir();
              PreparedStatement desc = con.prepareStatement(
                      "UPDATE tb_usuario SET nr_saldo = ?, nr_despesas = ? WHERE pk_id_usuario = ?")) {
@@ -126,7 +137,10 @@ public class UsuarioDao {
             desc.setLong(3, usuario.getId());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
@@ -140,7 +154,10 @@ public class UsuarioDao {
             desc.setLong(3, usuario.getId());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -153,7 +170,10 @@ public class UsuarioDao {
             desc.setLong(3, usuario.getId());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -175,15 +195,15 @@ public class UsuarioDao {
                 );
             }
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return null;
     }
 
     public boolean atualizarInformacoes(Usuario usuario) {
-        if(findbyEmail(usuario.getEmail()) != null) {
-            throw new FinanceiroException("Email ja cadastrado");
-        }
         try (Connection con = Conexao.abrir();
              PreparedStatement desc = con.prepareStatement(
                      "UPDATE tb_usuario SET nm_nome = ?, nm_senha = ? , nm_email = ? WHERE pk_id_usuario = ?")) {
@@ -193,7 +213,10 @@ public class UsuarioDao {
             desc.setLong(4, usuario.getId());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return true;

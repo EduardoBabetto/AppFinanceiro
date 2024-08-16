@@ -1,26 +1,26 @@
-package br.com.app.financeiro.exceptions;
+package br.com.app.financeiro.err.exceptions;
 
-public class FinanceiroException extends RuntimeException {
+public class UnauthorizedException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     
     private final int errorCode;
 
-    public FinanceiroException(String message) {
+    public UnauthorizedException(String message) {
         super(message);
         this.errorCode = 0;
     }
 
-    public FinanceiroException(String message, int errorCode) {
+    public UnauthorizedException(String message, int errorCode) {
         super(message);
         this.errorCode = errorCode;
     }
 
-    public FinanceiroException(String message, Throwable cause) {
+    public UnauthorizedException(String message, Throwable cause) {
         super(message, cause);
         this.errorCode = 0;
     }
 
-    public FinanceiroException(String message, int errorCode, Throwable cause) {
+    public UnauthorizedException(String message, int errorCode, Throwable cause) {
         super(message, cause);
         this.errorCode = errorCode;
     }
@@ -29,5 +29,3 @@ public class FinanceiroException extends RuntimeException {
         return errorCode;
     }
 }
-
-

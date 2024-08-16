@@ -3,20 +3,17 @@ package br.com.app.financeiro.service;
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.com.app.financeiro.dao.UsuarioDao;
-import br.com.app.financeiro.exceptions.FinanceiroException;
+import br.com.app.financeiro.err.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Usuario;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,25 +23,45 @@ public class UsuarioServiceTests {
     private UsuarioDao usuarioDao;
 
     @InjectMocks
-    @Autowired
     private UsuarioService usuarioService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @BeforeEach
-    void setUp(){
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    @DisplayName("Adicionar um novo usuário com sucesso")
-    public void adicionarUsuarioCase1(){
+    @DisplayName("Usuario com os dados corretos")
+    public Usuario usuarioCorreto(){
         Usuario usuario = new Usuario();
         usuario.setNome("Teste");
         usuario.setEmail("test@gmail.com");
         usuario.setSenha("12345678");
         usuario.setSaldo(BigDecimal.ZERO);
+        return usuario;
+    }
+
+    @DisplayName("Usuario com email incorreto")
+    public Usuario usuarioEmailIncorreto(){
+        Usuario usuario = new Usuario();
+        usuario.setNome("Teste");
+        usuario.setEmail("test.com");
+        usuario.setSenha("12345678");
+        usuario.setSaldo(BigDecimal.ZERO);
+        return usuario;
+    }
+
+    @DisplayName("Usuario com senha incorreta")
+    public Usuario usuarioSenhaIncorreto(){
+        Usuario usuario = new Usuario();
+        usuario.setNome("Teste");
+        usuario.setEmail("test@gmail.com");
+        usuario.setSenha("12345");
+        usuario.setSaldo(BigDecimal.ZERO);
+        return usuario;
+    }
+
+    @Test
+    @DisplayName("Adicionar um novo usuário com sucesso")
+    public void adicionarUsuarioCase1(){
+        Usuario usuario = usuarioCorreto();
 
         Mockito.when(usuarioDao.adicionarUsuario(Mockito.any(Usuario.class))).thenReturn(1L);
         Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn("12345678");
@@ -58,13 +75,7 @@ public class UsuarioServiceTests {
     @Test
     @DisplayName("Erro ao adicionar um novo usuário pela formatação do email")
     public void adicionarUsuarioCase2(){
-        Usuario usuario = new Usuario();
-        usuario.setNome("Teste");
-        usuario.setEmail("test.com");
-        usuario.setSenha("12345678");
-        usuario.setSaldo(BigDecimal.ZERO);
-
-        //Mockito.when(usuarioDao.adicionarUsuario(usuario)).thenReturn(null);
+       Usuario usuario = usuarioEmailIncorreto();
 
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.adicionarUsuario(usuario);
@@ -78,13 +89,7 @@ public class UsuarioServiceTests {
     @Test
     @DisplayName("Erro ao adicionar um novo usuário pela formatação da senha")
     public void adicionarUsuarioCase3(){
-        Usuario usuario = new Usuario();
-        usuario.setNome("Teste");
-        usuario.setEmail("test@gmail.com");
-        usuario.setSenha("12345");
-        usuario.setSaldo(BigDecimal.ZERO);
-
-        //Mockito.when(usuarioDao.adicionarUsuario(usuario)).thenReturn(null);
+       Usuario usuario = usuarioSenhaIncorreto();
 
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.adicionarUsuario(usuario);
@@ -113,8 +118,6 @@ public class UsuarioServiceTests {
     public void adicionarSaldoCase2(){
         BigDecimal novoSaldo = new BigDecimal(100.0);
         Long usuarioId = 1L;
-
-        //Mockito.when(usuarioDao.adicionarSaldo(Mockito.anyLong(), novoSaldo)).thenReturn(false);
 
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.adicionarSaldo(usuarioId, novoSaldo);
@@ -173,8 +176,6 @@ public class UsuarioServiceTests {
         usuario.setSenha("1234567");
         usuario.setSaldo(BigDecimal.ZERO);
 
-        //Mockito.when(usuarioDao.atualizarInformacoes(Mockito.any(Usuario.class))).thenReturn(false);
-
         Exception e = Assertions.assertThrows(FinanceiroException.class, () ->{
             usuarioService.atualizarInformacoes(usuario);
         });
@@ -183,5 +184,4 @@ public class UsuarioServiceTests {
 
         Mockito.verify(usuarioDao, Mockito.times(0)).atualizarInformacoes(Mockito.any(Usuario.class));
     }
-
 }

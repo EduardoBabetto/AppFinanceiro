@@ -8,10 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import br.com.app.financeiro.conexao.Conexao;
-import br.com.app.financeiro.exceptions.FinanceiroException;
+import br.com.app.financeiro.err.exceptions.FinanceiroException;
 import br.com.app.financeiro.model.Categoria;
 import br.com.app.financeiro.model.Usuario;
 import br.com.app.financeiro.service.UsuarioService;
@@ -27,7 +28,7 @@ public class CategoriaDao {
         carregarCategoriasPadroes();
     }
 
-    public boolean adicionarCategoria(Categoria categoria) {
+    public Long adicionarCategoria(Categoria categoria) {
         try (Connection con = Conexao.abrir();
              PreparedStatement desc = con.prepareStatement(
                      "INSERT INTO tb_categoria (fk_id_usuario, nm_nome, ds_descricao, nr_valor) VALUES (?,?,?,?)"
@@ -41,13 +42,16 @@ public class CategoriaDao {
                 if (generatedKeys.next()) {
                     categoria.setId(generatedKeys.getLong(1));
                 } else {
-                    throw new FinanceiroException("Falha ao adicionar categoria, nenhum ID gerado.");
+                    throw new FinanceiroException("Falha ao adicionar categoria, nenhum ID gerado.",HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
             ligacaoUsuarioCategoria(categoria);
-            return true;
+            return categoria.getId();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -75,7 +79,10 @@ public class CategoriaDao {
             }
             return true;
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -124,7 +131,10 @@ public class CategoriaDao {
             }
             
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     
         return categoria;
@@ -136,7 +146,10 @@ public class CategoriaDao {
             desc.setLong(1, id);
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
@@ -150,7 +163,10 @@ public class CategoriaDao {
             desc.setString(2, categoria.getNome());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -163,7 +179,10 @@ public class CategoriaDao {
             desc.setString(3, categoria.getNome());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -176,7 +195,10 @@ public class CategoriaDao {
             desc.setString(3, categoria.getNome());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -201,7 +223,10 @@ public class CategoriaDao {
             }
             
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     
         return categorias;
@@ -215,7 +240,10 @@ public class CategoriaDao {
             desc.setLong(2, categoria.getId());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
                         
     }
@@ -230,7 +258,10 @@ public class CategoriaDao {
             desc.setLong(4, categoria.getId());
             desc.execute();
         } catch (SQLException e) {
-            throw new FinanceiroException(e.getMessage(), e);
+            throw new FinanceiroException(e.getMessage(), e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            throw new FinanceiroException(e.getMessage(),e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
